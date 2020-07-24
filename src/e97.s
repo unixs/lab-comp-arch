@@ -19,7 +19,7 @@ func:
 #
 #    return a;
 # }
-build_arg:
+build_arg_1:
   enter $0, $0
   xor %eax, %eax
   mov 8(%ebp), %al
@@ -33,5 +33,23 @@ build_arg:
   mov 20(%ebp), %ah
   and $0b0001, %ah
   or %ah, %al
+  leave
+  ret
+
+build_arg:
+  enter $0, $0
+  xor %eax, %eax
+  mov %eax, %ecx
+
+  mov $0b1000, %bl
+
+  loop:
+  mov 8(%ebp,%ecx,4), %ah
+  and %bl, %ah
+  or %ah, %al
+  inc %cl
+  shr %bl
+  jnz loop
+
   leave
   ret
