@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 {
     uint8_t result = 0;
 
-    uint8_t abcd = build_arg(8, false, 2, true);
+    uint8_t abcd = build_arg(0, 1, 0, 1);
 
     func(abcd, &result);
 
