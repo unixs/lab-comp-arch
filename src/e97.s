@@ -1,86 +1,58 @@
-  .globl func, build_arg
+  .globl func, prepare_args
 
   .data
 
-mask: .byte 0x01, 0x01, 0x01, 0x01
+mask: .long 0x00000001, 0x00000001, 0x00000001, 0x00000001
 
   .text
 
 func:
   enter $0, $0
-  nop
+  push
+
   leave
   ret
 
-# uint8_t build_arg(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
+# void prepare_args(uint8_t *a, uint8_t *b, uint8_t *c, uint8_t *d)
 # {
-#    a = a & 1 << 3;
-#    a = a | (b & 1 << 2);
-#    a = a | (c & 1 << 1);
-#    a = a | (d & 1);
-#
-#    return a;
+#    *a = *a & 1;
+#    *b = *b & 1;
+#    *c = *c & 1;
+#    *d = *d & 1;
 # }
-build_arg_1:
+prepare_args:
   enter $0, $0
-  xor %eax, %eax
-  mov 8(%ebp), %al
-  and $1, %al
-  shl $3, %al
-  mov 12(%ebp), %bl
-  and $1, %bl
-  shl $2, %bl
-  or %bl, %al
-  mov 16(%ebp), %bl
-  and $1, %bl
-  shl %bl
-  or %bl, %al
-  mov 20(%ebp), %bl
-  and $0b0001, %bl
-  or %bl, %al
-  leave
-  ret
-
-build_arg:
-  enter $0, $0
-  xor %eax, %eax
-  xor %ecx, %ecx
-
-  1:
-  mov 8(%ebp,%ecx,4), %bl
-  and $1, %bl
-  or %bl, %al
-  shl %al
-  inc %cl
-  cmp $4, %cl
-  jnz 1b
-
-  leave
-  ret
-
-# With SSE2
-build_arg_3:
   xor %eax, %eax
   mov %eax, %ecx
 
-  jmp 2f
+  sub $8, %esp # stack align
+
   1:
-  shl $8, %eax
-  2:
-  mov 8(%ebp,%ecx,4), %al
+  mov 8(%ebp,%ecx,4), %ebx
+  mov (%ebx), %al
+  push %eax
   inc %cl
   cmp $4, %cl
   jl 1b
 
-  movd %eax, %xmm0
-  movd mask, %xmm1
-  pand %xmm1, %xmm0 # SIMD and
+  movdqa (%esp), %xmm0
+  movdqa mask, %xmm1
+  pand %xmm1, %xmm0 # SSE AND
 
-  movd %xmm0, %edx
+  movdqa %xmm0, (%esp)
 
-  xor %ecx, %ecx
-  mov %dl, %al
+  1:
+  dec %ecx
+  js 1f
+  mov 8(%ebp,%ecx,4), %ebx
+  pop %eax
+  mov %al, (%ebx)
+  jmp 1b
+  1:
 
+  add $8, %esp # stack restore
+
+  leave
   ret
 # edx
 #    a    b    c    d
