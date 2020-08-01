@@ -1,4 +1,4 @@
-  .globl func, prepare_args
+  .globl func
 
   .data
 
@@ -8,8 +8,11 @@ mask: .long 0x00000001, 0x00000001, 0x00000001, 0x00000001
 
 func:
   enter $0, $0
-  push
-
+  sub $8+16, %esp # stack align
+  movdqa 8(%ebp), %xmm0
+  movdqa %xmm0, (%esp)
+  call prepare_args
+  add $8+16, %esp
   leave
   ret
 
@@ -38,7 +41,6 @@ prepare_args:
   movdqa (%esp), %xmm0
   movdqa mask, %xmm1
   pand %xmm1, %xmm0 # SSE AND
-
   movdqa %xmm0, (%esp)
 
   1:
@@ -54,10 +56,3 @@ prepare_args:
 
   leave
   ret
-# edx
-#    a    b    c    d
-# 0000 0000 0000 0001
-
-# al
-#      abcd
-# 0000 0001

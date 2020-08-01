@@ -10,9 +10,7 @@ int main(int argc, char **argv)
             c = 3,
             d = 4;
 
-    prepare_args(&a, &b, &c, &d);
-
-    uint8_t result = func(a, b, c, d);
+    uint8_t result = func(&a, &b, &c, &d);
 
     printf("RESULT: %u\n", result);
 
