@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-uint8_t func(uint8_t *a, uint8_t *b, uint8_t *c, uint8_t *d);
+uint8_t func(const uint8_t *a, const uint8_t *b, const uint8_t *c, const uint8_t *d);
 
 #endif //COMP_ARCH_E97_H

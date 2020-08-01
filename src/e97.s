@@ -1,6 +1,7 @@
   .globl func
 
   .data
+  .align 16
 
 mask: .long 0x00000001, 0x00000001, 0x00000001, 0x00000001
 
@@ -9,7 +10,7 @@ mask: .long 0x00000001, 0x00000001, 0x00000001, 0x00000001
 # uint8_t func(uint8_t *a, uint8_t *b, uint8_t *c, uint8_t *d)
 # {
 #    prepare_args(a, b, c, d);
-#    return (*a | *b) & (!*a | *c) & (!*b | !*c) & (!*a | !*c | d);
+#    return (*a | *b) & (!*a | *c) & (!*b | !*c) & (!*a | !*c | *d);
 # }
 func:
   enter $0, $0
