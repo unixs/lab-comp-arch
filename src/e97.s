@@ -19,31 +19,31 @@ func:
   call prepare_args
   add $8+16, %esp
 
-  # (1) = *a | *b
-  mov 8(%ebp), %eax # &a
-  mov (%eax), %ax # al = *a; ah = *b
+  mov 8(%ebp), %ebx # &[abcd]
+  mov (%ebx), %ebx
+  mov %bx, %ax # al = *a; ah = *b
+  shr $16, %ebx # bl = *c; bh = *d
 
+  # (1) = *a | *b
   mov %ah, %dl
   or %al, %dl
   shl $8, %dx
 
   # (2) = !*a | *c
-  mov 8+4*2(%ebp), %ecx # &c
-  mov (%ecx), %cx # cl = *c; ch = *d
   not %al
-  mov %cl, %dl
+  mov %bl, %dl
   or %al, %dl
   shl $8, %edx
 
   # (3) = !*b | !*c
-  not %cl
   not %ah
+  not %bl
   mov %ah, %dl
-  or %cl, %dl
+  or %bl, %dl
 
   # (4) = !*a | !*c | *d
-  or %cl, %al
-  or %ch, %al
+  or %bl, %al
+  or %bh, %al
 
   # (5) = (3) & (4)
   and %dl, %al
