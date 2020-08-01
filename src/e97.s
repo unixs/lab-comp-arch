@@ -21,34 +21,29 @@ func:
 
   # (1) = *a | *b
   mov 8(%ebp), %eax # &a
-  mov (%eax), %al # *a
-  mov 8+4*1(%ebp), %ebx # &b
-  mov (%ebx), %bl # *b
-  mov %bl, %bh
-  or %al, %bh
-  mov %bh, %dl
+  mov (%eax), %ax # al = *a; ah = *b
+
+  mov %ah, %dl
+  or %al, %dl
   shl $8, %dx
 
   # (2) = !*a | *c
   mov 8+4*2(%ebp), %ecx # &c
-  mov (%ecx), %cl # *c
+  mov (%ecx), %cx # cl = *c; ch = *d
   not %al
-  mov %cl, %ch
-  or %al, %ch
-  mov %ch, %dl
+  mov %cl, %dl
+  or %al, %dl
   shl $8, %edx
 
   # (3) = !*b | !*c
   not %cl
-  not %bl
-  or %cl, %bl
-  mov %bl, %dl
+  not %ah
+  mov %ah, %dl
+  or %cl, %dl
 
   # (4) = !*a | !*c | *d
-  mov 8+4*3(%ebp), %ebx # &d
-  mov (%ebx), %bl # *d
   or %cl, %al
-  or %bl, %al
+  or %ch, %al
 
   # (5) = (3) & (4)
   and %dl, %al
