@@ -16,6 +16,14 @@ endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
+cmake_host_system_information(RESULT CPU_HAS_SSE2 QUERY HAS_SSE2)
+
+if(CPU_HAS_SSE2)
+  message(STATUS "Found SSE2 CPU.")
+else()
+  message(FATAL_ERROR "CPU is not support SSE2 instruction set." )
+endif()
+
 if(CMAKE_COMPILER_IS_GNUCC)
     message(STATUS "Detected GNU compiler. Using specific flags.")
     set(CMAKE_C_FLAGS "-pipe -Wno-unused-parameter -m32 -march=i386")
